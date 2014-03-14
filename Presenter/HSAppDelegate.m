@@ -38,6 +38,11 @@
     
     displays = malloc(count * sizeof(CGDirectDisplayID));
     
+    if (!displays) {
+        [infoLabel setStringValue:@"Uh oh..."];
+        return;
+    }
+    
     if (CGGetOnlineDisplayList(count, displays, &count) == 0) {
         NSString *displayInfo = @"Displays:\n\n";
         
@@ -64,7 +69,11 @@ static void displaysChangedCallback(CGDirectDisplayID display, CGDisplayChangeSu
 
 static NSString *displayNameFromCGDisplayID(CGDirectDisplayID displayID)
 {
-    NSDictionary *deviceInfo = CFBridgingRelease(IODisplayCreateInfoDictionary(IOServicePortFromCGDisplayID(displayID), kIODisplayOnlyPreferredName));
+    io_service_t serv = IOServicePortFromCGDisplayID(displayID);
+    NSDictionary *deviceInfo = CFBridgingRelease(IODisplayCreateInfoDictionary(serv, kIODisplayOnlyPreferredName));
+    
+    IOObjectRelease(serv);
+    
     NSDictionary *localizedNames = deviceInfo[[NSString stringWithUTF8String:kDisplayProductName]];
     
     if ([localizedNames count] > 0) {
