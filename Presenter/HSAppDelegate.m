@@ -18,7 +18,7 @@
     [self updateDisplayList];
 }
 
-- (void)applicationWillTerminate:(NSNotification *)notification
+- (void)applicationWillTerminate:(NSNotification *)aNotification
 {
     CGDisplayRemoveReconfigurationCallback(displaysChangedCallback, (__bridge void *)self);
 }
